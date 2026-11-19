@@ -1,0 +1,310 @@
+20-05-2026 -- Wednesday
+
+
+read and validate encode arguments{
+
+
+    => validation of 3rd argument with NULL address
+
+    =>1st validate for the extension as (. with strchar fail! return  failure and .bmp with strcmp(. address,".bmp"))
+    =>2nd validate for file existence 
+    => if success store the argv[2]'s address in the encInfo ->   src_image_fname =argv[2]   
+                        
+                        or
+
+hd beautiful.bmp | head  ===>   to get info of a file in hex form 
+                                head => to print only head part of the bmp file
+
+    => we can just check with first 2 bytes with BM 
+    if its BM again store the addres of bmp file argument from CLA 
+
+
+    => validation of 4th argument only with the file existence in the directory
+    => if present store it in the secret_fname
+
+    => validation of 5th argument which is optional
+    if its given check for its extension if valid store it in the stego_image_fname
+    else store an default string.bmp in the stego_image_fname
+
+if every function is done return success
+}
+
+
+
+hw 
+char data = 0xAB; ==> 1010 1011
+char data[8] = {1,2,3,4,5,6,7,8}; 
+0001 => 1
+0010 => 2
+0011 => 3
+0100 => 4
+0101 => 5
+0110 => 6
+0111 => 7
+1000 => 8
+
+take one bit from data and store into arr's 1 bytes's LSB
+
+0001 => 1
+0011 => 3
+0010 => 2
+0101 => 5
+
+0100 => 4
+0111 => 7
+0110 => 6
+1001 => 9
+
+To encode 1 byte of data we need 8bytes of RGB data so that each bit can be stored in the lsb bit 
+
+
+
+21 - 05 -2026   ---     Thursday
+
+= > store status in a variable print the status of the function
+
+in do_encoding(Encode *encInfo){
+    //func calls
+    ret => open_files(encInfo);
+    //check ret value and print status output
+    ret =>  check_capacity(encInfo);
+    if(ret)=> success
+    ret = copy_bmp_header(encInfo->fptr_src_image,encInfo->fptr_setgo_image);//copy header of the src bmp to dest bmp
+    if ret => e_success
+        //start of encoding
+        ret = encode_magic_string(MAGIC_STRING,encInfo);
+    else e_failure
+
+    if ret=> e_success
+    ret => Status encode_secret_file_ext_size(long extn_size, EncodeInfo *encInfo);
+    if ret=> success
+        ret = encode_secret_file_extn(encInfo->extn_secret_file,encInfo);
+    if ret=> success
+    ret = > encode_secret_file_size(ecInfo-size_secret_file,encInfo);
+    if ret => e_success
+    ret => encode_secret_file_data(encInfo);
+    if ret => e_success
+    ret => copy_remaining_img_data(src_file_ptr,dest_file_ptr);
+    if ret => e_success?"
+
+}
+
+
+
+
+
+
+
+
+
+//important function which will be used again and again for encoding everything
+Status encode_byte_to_lsb(char data, char *image_buffer){
+    //encoding
+    1. take each bit from dat and store int image buffer's each bytes's lsb
+    2. repeat for 8 times 
+    return e_success
+}
+
+
+
+
+Use of MAGIC string
+For security purpose coz only the enocder and decoder will be knowing the magic string
+for the identification of the encoded file
+
+status check_capacity(Encode *encInfo){
+
+    1.size of rgb data2.
+    2.Size of data to be encoded
+    //total = ms + extn_size +extn + file_sizr +data
+    total = (strlen(MAGIC_STRING)*8) + 32 + (strlrn (endInfo->extn_secret_file)*8)+32+(find_file_of_secret_file*8)
+    
+    
+    {
+        rgb data = total_bmp_file_size-header_size-1;
+    or
+    rgb data = file_size_bytes - 54 -1;
+    or
+    rgb data = four bytes from 18th byte * 4 bytes from the 22nd byte * 3;
+    }
+ func get_image size
+     /*
+        if total encode data < rgb of mbp
+        proceed
+    
+    else
+    STOP
+    */
+}
+
+
+= > Definition of do_encoding{
+
+we are gonna utilize total of 3 files  i.e beautiful.bmp in read mode,secret.txt in read mode,stego_image_fname in write mode
+check whether it opened or not
+
+what are all should be encoded
+1) MAGIC string => 2 bytes
+2) Secret File extn size => 2 bytes
+3) secret file extn => .c
+4) Secret file size = > 6
+5) Secret file data = > "Hello\0"
+
+check - capacity:
+total RGB data bytes required for above detials
+1) M_S => 16bytes
+2) extn_size => 32bytes
+3) extn => 16 bytes
+4) file size => 32 bytes
+5) secret data => file_size*8 => 48
+
+total RGB Data bytes required is 16+32+16+32+48 => 144 bytes
+
+Hence 
+if total > RGB of bmp file proceed
+else 
+stop
+}
+
+
+
+
+
+22-05-2026    ----     Friday
+
+pending - work :
+=> store image size in the member
+=> store image_data
+
+
+
+status encode_magic_string(MAGIC_STRING,encInfo){
+char buff[8];
+
+loop : strlen(m_s)
+    1. read 8 bytes of rgb data from src file (bmp),store it into the nuffer
+    2. encode_byte_to_lsb(m_s[loop_var],buff)
+    3. write 8 bytes of encoded data(buff) into dest file(stego_img_file)
+}
+
+
+
+
+
+Status encode_secret_file_ext_size(long extn_size, EncodeInfo *encInfo){
+    char buff[8];
+
+loop : 4times
+    1. read 8 bytes of rgb data from src file (bmp),store it into the nuffer
+    2. encode_byte_to_lsb(((char*)extn_size)+loop_var,buff)
+    3. write 8 bytes of encoded data(buff) into dest file(stego_img_file)
+    ret success/failure
+}
+
+
+Status encode_secret_file_extn(const char *file_extn, EncodeInfo *encInfo){
+    char buff[8];
+
+loop : strlen(secret_extensi0on)times
+    1. read 8 bytes of rgb data from src file (bmp),store it into the buffer
+    2. encode_byte_to_lsb(file_exten[loop_var]+loop_var,buff)
+    3. write 8 bytes of encoded data(buff) into dest file(stego_img_file)
+    ret success/failure
+}
+
+Status encode_secret_file_size(long file_size, EncodeInfo *encInfo){
+    char image_data[MAX_IMAGE_BUF_SIZE]; // 8bytes buffer
+
+loop : 4times
+    1. read 8 bytes of rgb data from src file (bmp),store it into the nuffer
+    2. encode_byte_to_lsb(((char*)file_size)+loop_var,buff)
+    3. write 8 bytes of encoded data(buff) into dest file(stego_img_file)
+    ret success
+}
+
+
+Status encode_secret_file_data(EncodeInfo *encInfo){
+
+loop secret file_size times
+        1.read 8 bytes of rgb data from src file (bmp),store it into the image_buffer
+        2.read 1byte of secret file data from the secret file ,store it in the structure member secret_data
+        3.encode_byte_to_lsb(secret_data+loop_var,buff)
+        4.write 8 bytes of encoded data(buff) into dest file(stego_img_file)
+        ret success
+}       
+
+Status copy_remaining_img_data(FILE *fptr_src, FILE *fptr_dest){
+    read 1 byte from src file
+    write 1 byte into dest file
+    repeat untill EOF is not reached
+    return success
+}
+
+
+
+26 - 05 - 2026  ---  Tuesday
+
+#include<stdio.h>
+
+    0   1       2                   3
+./a.out -d output.bmp [output fname without extn]===> [] means optional
+
+read_and_validate_decode_args(args)
+//argv[2]  =>  ".bmp"
+argv[3]  =>  passed or not
+
+//passed  => take fname without extn and store into structure
+ret 
+//not passed => give default fname without extn
+ret e_success
+
+de_decoding(args)
+{
+    //open_files() => src_file => output.bmp
+    //skip the header of 54 bytes
+    //decode magic string
+    //decode secret file extn size(332bytes)
+    //decode secret file extn => extn_size * 8bytes (eg :3 => 3*8)
+    op : file extn
+    //strcat=>out fname & file extension
+    //open_files => dest_file => output fname with extn
+    //declde secret_file_size (32bytes)
+    o/p : file size
+    //decode secret file data => file size * 8bytes//
+    //store o/p into output fname with extn
+    ret e_success
+
+}
+
+decode magic string (args){
+    //loop(size len magic string times)
+    //read 8 bytes of rgb data from src file
+    //decode_byte_from_lsb()
+
+    compare decoded magic string with "encoded magic string"
+    equal => e_success
+    not equal => e_failure
+}
+
+/*decode_secret_file_extn_size()*/
+loop(32 times)
+decode_byte_from_lsb
+op:int(size)
+
+
+
+
+}
+
+decode_byte_from_lsb(char data,char*buffer){
+    data = 0; //0000 0000
+
+}
+
+
+main (){
+    //perform de_decoding
+    ret = do_decoding
+    ret = do_decoding(args);
+    
+}
